@@ -1,3 +1,5 @@
+require('./silent-mode');
+
 const packageJson = require('../package.json');
 const config = require('./cli.js')
 	.program({
@@ -174,14 +176,21 @@ Promise.all(
 					address || '0.0.0.0'
 				}:${port[type]}`
 			);
-		if (port[0])
-			server.http
-				.listen(port[0], address)
-				.once('listening', () => log(0));
-		if (port[1])
-			server.https
-				.listen(port[1], address)
-				.once('listening', () => log(1));
+		const listen = (type, instance) => {
+			const protocol = ['HTTP', 'HTTPS'][type];
+			const bindAddress = address || '0.0.0.0';
+			return instance
+				.listen(port[type], address)
+				.once('listening', () => log(type))
+				.on('error', (error) => {
+					logger.error(
+						`Failed to bind ${protocol} server on ${bindAddress}:${port[type]}: ${error.message}`
+					);
+					process.exit(1);
+				});
+		};
+		if (port[0]) listen(0, server.http);
+		if (port[1]) listen(1, server.https);
 		if (cnrelay) logger.info(`CNRelay: ${cnrelay}`);
 	})
 	.catch((error) => {

@@ -1,6 +1,6 @@
 {
 	"name": "@unblockneteasemusic/server",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Revive unavailable songs for Netease Cloud Music",
 	"main": "src/provider/match.js",
 	"bin": {
@@ -14,6 +14,7 @@
 		"start": "cross-env node src/app.js -e https://music.163.com",
 		"build": "webpack",
 		"pkg": "pkg . --out-path=dist/",
+		"build:silent": "node scripts/build-silent.js",
 		"test": "jest"
 	},
 	"pkg": {
